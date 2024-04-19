@@ -30,7 +30,6 @@ def login(request):
         token = Token.objects.get_or_create(user=user)
         token[0].delete()
         token = Token.objects.create(user=user)
-        print(token)
     except Exception as e:
         print(e)
         return Response({
@@ -65,7 +64,19 @@ def signup(request):
             "status": "error",
             "message": "phone number already exists"
         })
-    
+
+@api_view(http_method_names=["GET"])
+@authentication_classes(authentication_classes=[TokenAuthentication])
+@permission_classes(permission_classes=[IsAuthenticated])
+def logout(request):
+    token = Token.objects.get_or_create(user=request.user)
+    token[0].delete()
+    token = Token.objects.create(user=request.user)
+    return Response({
+        "status": "ok",
+        "message": "logged out"
+    })
+
 @api_view(http_method_names=["GET"])
 @authentication_classes(authentication_classes=[TokenAuthentication])
 @permission_classes(permission_classes=[IsAuthenticated])
